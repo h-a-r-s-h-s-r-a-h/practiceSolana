@@ -1,5 +1,5 @@
-"use client";
-import { FC, ReactNode, useEffect, useState } from "react";
+"use-client";
+import { FC, ReactNode, useState, useEffect } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -11,20 +11,16 @@ require("@solana/wallet-adapter-react-ui/styles.css");
 
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // Prevents SSR mismatches
-
-  const wallets = [new PhantomWalletAdapter()];
-
+  if (!mounted) return null;
+  const wallet = [new PhantomWalletAdapter()];
   const endpoint = web3.clusterApiUrl("devnet");
-
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets}>
+      <WalletProvider wallets={wallet}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

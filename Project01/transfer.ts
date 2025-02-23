@@ -10,7 +10,7 @@ const connection = new web3.Connection(
 
 const senderKeypair = getKeypairFromEnvironment("SECRET_KEY");
 const receiverPublicKey = new web3.PublicKey(
-  "37vW6EMycvnVMhhCdStFxPWkWjd1ySH149WLxeQDUuWK"
+  "EXMyzSh41GBiLoGcqE7QCYz7eNd3uPWcsBER1E8dTJxt"
 );
 
 const balanceInLamportsOfSender = await connection.getBalance(
@@ -27,7 +27,7 @@ const balanceInSOLOfReceiver =
 console.log(`💸 Balance of Receiver :- `, balanceInSOLOfReceiver, `SOL`);
 
 const transaction = new web3.Transaction();
-const LAMPORTS_TO_SEND = 10000000;
+const LAMPORTS_TO_SEND = 4000000000;
 
 const sendSolInstruction = web3.SystemProgram.transfer({
   fromPubkey: senderKeypair.publicKey,
