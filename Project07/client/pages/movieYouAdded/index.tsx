@@ -63,10 +63,7 @@ const Home: NextPage = () => {
                   <p className="mt-3 text-green-400 font-semibold text-lg flex items-center">
                     ⭐ {review.rating} / 5
                   </p>
-                  <div className="flex justify-between items-center mt-6">
-                    <button className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-5 py-2 rounded-lg font-semibold transition hover:scale-105">
-                      Update
-                    </button>
+                  <div className="flex flex-wrap justify-center gap-4 mt-4 w-full">
                     <Link
                       href={{
                         pathname: "/updateMovie",
@@ -78,13 +75,28 @@ const Home: NextPage = () => {
                       }}
                       passHref
                     >
-                      <button className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-5 py-2 rounded-lg font-semibold transition hover:scale-105">
+                      <button className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold transition hover:scale-105">
+                        Update
+                      </button>
+                    </Link>
+                    <Link
+                      href={{
+                        pathname: "/details",
+                        query: {
+                          title: review.title,
+                          description: review.description,
+                          rating: review.rating,
+                        },
+                      }}
+                      passHref
+                    >
+                      <button className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 py-2 rounded-lg font-semibold transition hover:scale-105">
                         📜 See Full Detail
                       </button>
                     </Link>
                     <button
                       onClick={() => deleteReview(review.title)}
-                      className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-5 py-2 rounded-lg font-semibold transition hover:scale-105"
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold transition hover:scale-105"
                     >
                       Delete
                     </button>
