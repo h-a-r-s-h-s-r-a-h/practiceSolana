@@ -4,12 +4,14 @@ import { AnchorCounter } from "../target/types/anchor_counter";
 
 describe("anchor-counter", () => {
   // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.AnchorProvider.env());
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
 
   const program = anchor.workspace.anchorCounter as Program<AnchorCounter>;
 
+  const counter = anchor.web3.Keypair.generate();
+
   it("Is initialized!", async () => {
-    // Add your test here.
     const tx = await program.methods.initialize().rpc();
     console.log("Your transaction signature", tx);
   });
