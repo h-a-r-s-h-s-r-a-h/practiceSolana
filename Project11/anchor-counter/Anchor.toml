@@ -6,14 +6,14 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-anchor_counter = "2ZhdhDNeHnvmodhdgaJ6XdxHwURpQ1JwJPaJEMtk49Bx"
+anchor_counter = "XMCfHd438ovgCVp4XQp8GYg8Dayf6Yrkz4WczvP5TX4"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
-wallet = "~/.config/solana/id.json"
+cluster = "https://api.devnet.solana.com"
+wallet = "/home/dev/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("2ZhdhDNeHnvmodhdgaJ6XdxHwURpQ1JwJPaJEMtk49Bx");
+declare_id!("XMCfHd438ovgCVp4XQp8GYg8Dayf6Yrkz4WczvP5TX4");
 
 #[program]
 pub mod anchor_counter {
@@ -9,12 +9,11 @@ pub mod anchor_counter {
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         let counter = &mut ctx.accounts.counter;
         counter.count = 0;
-        msg!("Counter Account Created!");
-        msg!("Counter Count :{}", counter.count);
+        msg!("Counter Account Created");
+        msg!("Cuurent Count: { }", counter.count);
         Ok(())
     }
-
-    pub fn update(ctx: Context<Update>) -> Result<()> {
+    pub fn increment(ctx: Context<Update>) -> Result<()> {
         let counter = &mut ctx.accounts.counter;
         msg!("Previous counter: {}", counter.count);
         counter.count = counter.count.checked_add(1).unwrap();
@@ -26,8 +25,8 @@ pub mod anchor_counter {
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(init,
-        payer=user,
-        space = DISCRIMINATOR+Counter::INIT_SPACE
+        payer = user,
+        space = DISCRIMINATOR+ Counter::INIT_SPACE
     )]
     pub counter: Account<'info, Counter>,
     #[account(mut)]
