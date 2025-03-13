@@ -1,7 +1,14 @@
 import React from "react";
+import "./globals.css"; // ✅ Import global styles here
 import type { AppProps } from "next/app";
-import "./globals.css";
+import WalletContextProvider from "../components/WalletContextProvider";
 
-export default function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <WalletContextProvider>
+      <Component {...pageProps} />
+    </WalletContextProvider>
+  );
 }
+
+export default MyApp;
