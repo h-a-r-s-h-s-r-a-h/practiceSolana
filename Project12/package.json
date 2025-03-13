@@ -9,8 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@coral-xyz/anchor": "^0.31.0",
+    "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.0.0",
+    "@metaplex-foundation/umi-uploader-irys": "^1.0.0",
     "@solana-developers/helpers": "^2.7.0",
     "@solana/web3.js": "^1.98.0",
     "esrun": "^3.2.26",
