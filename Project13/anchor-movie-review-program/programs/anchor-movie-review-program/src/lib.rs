@@ -54,7 +54,7 @@ pub mod anchor_movie_review_program {
                 },
                 &[&["mint".as_bytes(), &[ctx.bumps.mint]]],
             ),
-            10 * 10_u64.pow(6),
+            10 * 10 ^ 6,
         )?;
 
         Ok(())
@@ -108,7 +108,11 @@ pub mod anchor_movie_review_program {
         Ok(())
     }
 
-    pub fn update_comment(ctx: Context<UpdateComment>, new_comment_text: String) -> Result<()> {
+    pub fn update_comment(
+        ctx: Context<UpdateComment>,
+        _movie_title: String,
+        new_comment_text: String,
+    ) -> Result<()> {
         let comment = &mut ctx.accounts.comment;
         comment.comment_text = new_comment_text;
         comment.timestamp = Clock::get()?.unix_timestamp;
@@ -207,10 +211,10 @@ pub struct InitializeMint<'info> {
 pub struct AddComment<'info> {
     #[account(
         init,
-        seeds = [movie_title.as_bytes(), commenter.key().as_ref()],
+        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref()],
         bump,
         payer = commenter,
-        space = 8 + 32 + movie_title.len() + comment_text.len() + 8
+        space = 8 + 32 + (4 + movie_title.len()) + (4 + comment_text.len()) + 8
     )]
     pub comment: Account<'info, CommentAccountState>,
 
@@ -225,14 +229,15 @@ pub struct AddComment<'info> {
 pub struct UpdateComment<'info> {
     #[account(
         mut,
-        seeds = [movie_title.as_bytes(), commenter.key().as_ref()],
+        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref()],
         bump,
-        has_one = commenter // Ensures only the original commenter can update
+        // has_one = commenter // Ensures only the original commenter can update
     )]
     pub comment: Account<'info, CommentAccountState>,
 
     #[account(mut)]
     pub commenter: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 #[account]

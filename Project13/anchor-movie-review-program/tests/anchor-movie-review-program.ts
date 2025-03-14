@@ -4,7 +4,6 @@ import { expect } from "chai";
 import { getAssociatedTokenAddress, getAccount } from "@solana/spl-token";
 import { AnchorMovieReviewProgram } from "../target/types/anchor_movie_review_program";
 
-
 describe("anchor-movie-review-program", () => {
   // Configure the client to use the local cluster.
   const provider = anchor.AnchorProvider.env();
@@ -21,6 +20,17 @@ describe("anchor-movie-review-program", () => {
 
   const [moviePda] = anchor.web3.PublicKey.findProgramAddressSync(
     [Buffer.from(movie.title), provider.wallet.publicKey.toBuffer()],
+    program.programId
+  );
+
+  const commentText = "This movie was amazing!";
+  const updatedComment = "much amazing!";
+  const [commentPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("comment"),
+      Buffer.from(movie.title),
+      provider.wallet.publicKey.toBuffer(),
+    ],
     program.programId
   );
 
@@ -105,6 +115,45 @@ describe("anchor-movie-review-program", () => {
       }
     } catch (error) {
       console.error("Error deleting movie review:", error);
+      throw error;
+    }
+  });
+
+  it("adds a comment to a movie", async () => {
+    try {
+      await program.methods
+        .addComment(movie.title, commentText)
+        .accounts({})
+        .rpc();
+
+      const commentAccount = await program.account.commentAccountState.fetch(
+        commentPda
+      );
+      expect(commentAccount.commenter.toString()).to.equal(
+        provider.wallet.publicKey.toString()
+      );
+      expect(commentAccount.commentText).to.equal(commentText);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      throw error;
+    }
+  });
+
+  it("update comment to a movie", async () => {
+    try {
+      await program.methods
+        .updateComment(movie.title, updatedComment)
+        .rpc();
+
+      const commentAccount = await program.account.commentAccountState.fetch(
+        commentPda
+      );
+      expect(commentAccount.commenter.toString()).to.equal(
+        provider.wallet.publicKey.toString()
+      );
+      expect(commentAccount.commentText).to.equal(updatedComment);
+    } catch (error) {
+      console.error("Error adding comment:", error);
       throw error;
     }
   });
