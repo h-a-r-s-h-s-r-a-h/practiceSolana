@@ -139,11 +139,29 @@ describe("anchor-movie-review-program", () => {
     }
   });
 
-  it("update comment to a movie", async () => {
+  it("adds second comment to a movie", async () => {
     try {
       await program.methods
-        .updateComment(movie.title, updatedComment)
+        .addComment(movie.title, "This is second comment on a movie")
+        .accounts({})
         .rpc();
+
+      const commentAccount = await program.account.commentAccountState.fetch(
+        commentPda
+      );
+      expect(commentAccount.commenter.toString()).to.equal(
+        provider.wallet.publicKey.toString()
+      );
+      expect(commentAccount.commentText).to.equal(commentText);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      throw error;
+    }
+  });
+
+  it("update comment to a movie", async () => {
+    try {
+      await program.methods.updateComment(movie.title, updatedComment).rpc();
 
       const commentAccount = await program.account.commentAccountState.fetch(
         commentPda
