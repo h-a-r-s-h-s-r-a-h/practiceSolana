@@ -92,6 +92,31 @@ pub mod anchor_movie_review_program {
         Ok(())
     }
 
+    pub fn add_comment(
+        ctx: Context<AddComment>,
+        movie_title: String,
+        comment_text: String,
+    ) -> Result<()> {
+        let comment = &mut ctx.accounts.comment;
+
+        comment.commenter = ctx.accounts.commenter.key();
+        comment.movie_title = movie_title;
+        comment.comment_text = comment_text;
+        comment.timestamp = Clock::get()?.unix_timestamp;
+
+        msg!("Comment added successfully!");
+        Ok(())
+    }
+
+    pub fn update_comment(ctx: Context<UpdateComment>, new_comment_text: String) -> Result<()> {
+        let comment = &mut ctx.accounts.comment;
+        comment.comment_text = new_comment_text;
+        comment.timestamp = Clock::get()?.unix_timestamp;
+
+        msg!("Comment updated successfully!");
+        Ok(())
+    }
+
     pub fn initialize_token_mint(_ctx: Context<InitializeMint>) -> Result<()> {
         msg!("Token mint initialized");
         Ok(())
@@ -177,12 +202,53 @@ pub struct InitializeMint<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+#[instruction(movie_title: String, comment_text: String)]
+pub struct AddComment<'info> {
+    #[account(
+        init,
+        seeds = [movie_title.as_bytes(), commenter.key().as_ref()],
+        bump,
+        payer = commenter,
+        space = 8 + 32 + movie_title.len() + comment_text.len() + 8
+    )]
+    pub comment: Account<'info, CommentAccountState>,
+
+    #[account(mut)]
+    pub commenter: Signer<'info>, // The user adding the comment
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(movie_title: String)]
+pub struct UpdateComment<'info> {
+    #[account(
+        mut,
+        seeds = [movie_title.as_bytes(), commenter.key().as_ref()],
+        bump,
+        has_one = commenter // Ensures only the original commenter can update
+    )]
+    pub comment: Account<'info, CommentAccountState>,
+
+    #[account(mut)]
+    pub commenter: Signer<'info>,
+}
+
 #[account]
 pub struct MovieAccountState {
     pub reviewer: Pubkey,
     pub rating: u8,
     pub title: String,
     pub description: String,
+}
+
+#[account]
+pub struct CommentAccountState {
+    pub commenter: Pubkey,    // The user who added the comment
+    pub movie_title: String,  // The movie the comment is related to
+    pub comment_text: String, // The comment itself
+    pub timestamp: i64,       // Timestamp when the comment was added
 }
 
 impl Space for MovieAccountState {
