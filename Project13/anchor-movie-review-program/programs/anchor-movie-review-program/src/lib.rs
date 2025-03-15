@@ -96,6 +96,7 @@ pub mod anchor_movie_review_program {
         ctx: Context<AddComment>,
         movie_title: String,
         comment_text: String,
+        comment_id: String,
     ) -> Result<()> {
         let comment = &mut ctx.accounts.comment;
 
@@ -103,6 +104,7 @@ pub mod anchor_movie_review_program {
         comment.movie_title = movie_title;
         comment.comment_text = comment_text;
         comment.timestamp = Clock::get()?.unix_timestamp;
+        comment.comment_id = comment_id;
 
         msg!("Comment added successfully!");
         Ok(())
@@ -111,6 +113,7 @@ pub mod anchor_movie_review_program {
     pub fn update_comment(
         ctx: Context<UpdateComment>,
         _movie_title: String,
+        _comment_id: String,
         new_comment_text: String,
     ) -> Result<()> {
         let comment = &mut ctx.accounts.comment;
@@ -207,14 +210,14 @@ pub struct InitializeMint<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(movie_title: String, comment_text: String)]
+#[instruction(movie_title: String, comment_text: String, comment_id:String)]
 pub struct AddComment<'info> {
     #[account(
         init,
-        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref()],
+        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref(), comment_id.as_bytes()],
         bump,
         payer = commenter,
-        space = 8 + 32 + (4 + movie_title.len()) + (4 + comment_text.len()) + 8
+        space = 8 + 32 + (4 + movie_title.len()) + (4 + comment_text.len()) + (4 + comment_id.len()) + 8
     )]
     pub comment: Account<'info, CommentAccountState>,
 
@@ -225,11 +228,11 @@ pub struct AddComment<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(movie_title: String)]
+#[instruction(movie_title: String,comment_id:String)]
 pub struct UpdateComment<'info> {
     #[account(
         mut,
-        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref()],
+        seeds = ["comment".as_bytes(),movie_title.as_bytes(), commenter.key().as_ref(), comment_id.as_bytes()],
         bump,
         // has_one = commenter // Ensures only the original commenter can update
     )]
@@ -250,10 +253,11 @@ pub struct MovieAccountState {
 
 #[account]
 pub struct CommentAccountState {
-    pub commenter: Pubkey,    // The user who added the comment
-    pub movie_title: String,  // The movie the comment is related to
-    pub comment_text: String, // The comment itself
-    pub timestamp: i64,       // Timestamp when the comment was added
+    pub commenter: Pubkey,
+    pub movie_title: String,
+    pub comment_text: String,
+    pub timestamp: i64,
+    pub comment_id: String,
 }
 
 impl Space for MovieAccountState {
