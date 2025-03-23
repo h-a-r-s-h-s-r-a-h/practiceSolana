@@ -26,7 +26,7 @@ const tokenMintAccount = new web3.PublicKey(
 );
 
 const recipientAssociatedTokenAccount = new web3.PublicKey(
-  "9QpeTqHVBWfwmuP7ZJ4jqor9tmGEVYuq86BXzvhcvXka"
+  "4shiEifh83Tydy7MrJwe4hskQcmg6p52MpiSrVt2kzpP"
 );
 
 const transactionSignature = await mintTo(
