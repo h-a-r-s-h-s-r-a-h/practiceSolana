@@ -11,10 +11,64 @@ declare_id!("89LgxYDDHCMqjKyJ7CXxZRiH93nGQEStekcmgzWWGvGW");
 #[program]
 pub mod anchor_movie_review_program {
     use super::*;
+    
+    pub fn add_movie_review(ctx:Context<AddMovieReview>,title:String,description:String,rating:u8)->Result<()>{
+        require!(rating>=MIN_RATING && rating <=MAX_RATING,MovieReviewError::InvalidRating);
+        require!(title.len() <= MAX_TITLE_LENGTH, MovieReviewError::TitleTooLong);
+        require!(description.len()<=MAX_DESCRIPTION_LENGTH,MovieReviewError::DescriptionTooLong);
+        msg!("Movie review account created");
+        msg!("Title: {}", title);
+        msg!("Description: {}", description);
+        msg!("Rating: {}", rating);
+
+        let movie_review = &mut ctx.accounts.movie_review;
+        movie_review.reviewer= ctx.accounts.initializer.key();
+        movie_review.title = title;
+        movie_review.description=description;
+        movie_review.rating=rating;
+
+        mint_to(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                MintTo {
+                    authority: ctx.accounts.mint.to_account_info(),
+                    to: ctx.accounts.token_account.to_account_info(),
+                    mint: ctx.accounts.mint.to_account_info(),
+                },
+                &[&["mint".as_bytes(), &[ctx.bumps.mint]]],
+            ),
+            10 * 10 ^ 6,
+        )?;
+        Ok(())
+    }
+
+    pub fn update_movie_review(ctx:Context<UpdateMovieReview>,title:String,description:String,rating:u8) -> Result<()>{
+        require!(
+            rating >= MIN_RATING && rating <= MAX_RATING,
+            MovieReviewError::InvalidRating
+        );
+
+        require!(
+            description.len() <= MAX_DESCRIPTION_LENGTH,
+            MovieReviewError::DescriptionTooLong
+        );
+
+        msg!("Movie review account space reallocated");
+        msg!("Title: {}", title);
+        msg!("Description: {}", description);
+        msg!("Rating: {}", rating);
+
+        let movie_review = &mut ctx.accounts.movie_review;
+        movie_review.description= description;
+        movie_review.rating= rating;
+        Ok(())
+    }
+
 }
 
 
 #[derive(Accounts)]
+#[instruction(title:String, description:String)]
 pub struct AddMovieReview<'info>{
     #[account(
         init,
@@ -43,6 +97,21 @@ pub struct AddMovieReview<'info>{
     pub token_account: Account<'info, TokenAccount>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+#[instruction(title:String)]
+pub struct UpdateMovieReview<'info>{
+    #[account(
+        mut,
+        seeds=[title.as_bytes(),initializer.key().as_ref()],
+        bump
+        
+    )]
+    pub movie_review: Account<'info, MovieAccountState>,
+    #[account(mut)]
+    pub initializer:Signer<'info>,
+    pub system_program:Program<'info , System>,
 }
 
 #[derive(Accounts)]
