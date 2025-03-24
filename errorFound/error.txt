@@ -1,0 +1,1 @@
+cargo update -p bytemuck_derive@1.9.2 --precise 1.8.1
