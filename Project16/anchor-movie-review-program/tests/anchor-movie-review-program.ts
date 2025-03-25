@@ -23,6 +23,21 @@ describe("anchor-movie-review-program", () => {
     program.programId
   );
 
+  const commentText = {
+    comment: "This is the best",
+    id: "12345",
+  };
+
+  const [commentPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("comment"),
+      Buffer.from(movie.title),
+      provider.wallet.publicKey.toBuffer(),
+      Buffer.from(commentText.id),
+    ],
+    program.programId
+  );
+
   const [mint] = anchor.web3.PublicKey.findProgramAddressSync(
     [Buffer.from("mint")],
     program.programId
@@ -69,7 +84,7 @@ describe("anchor-movie-review-program", () => {
   });
 
   it("updates a movie review", async () => {
-    const newDescription = "Wow this is new";
+    const newDescription = "Wow what a good movie it was real great";
     const newRating = 4;
 
     try {
@@ -103,6 +118,46 @@ describe("anchor-movie-review-program", () => {
       }
     } catch (error) {
       console.error("Error deleting movie review:", error);
+      throw error;
+    }
+  });
+  it("adds a comment to a movie", async () => {
+    try {
+      await program.methods
+        .addComment(movie.title, commentText.comment, commentText.id)
+        .accounts({})
+        .rpc();
+
+      const commentAccount = await program.account.commentAccountState.fetch(
+        commentPda
+      );
+      expect(commentAccount.commenter.toString()).to.equal(
+        provider.wallet.publicKey.toString()
+      );
+      expect(commentAccount.commentText).to.equal(commentText.comment);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      throw error;
+    }
+  });
+
+  it("update comment to a movie", async () => {
+    const updatedComment = "Wow what a good movie it was real great";
+
+    try {
+      await program.methods
+        .updateComment(movie.title, commentText.id, updatedComment)
+        .rpc();
+
+      const commentAccount = await program.account.commentAccountState.fetch(
+        commentPda
+      );
+      expect(commentAccount.commenter.toString()).to.equal(
+        provider.wallet.publicKey.toString()
+      );
+      expect(commentAccount.commentText).to.equal(updatedComment);
+    } catch (error) {
+      console.error("Error adding comment:", error);
       throw error;
     }
   });

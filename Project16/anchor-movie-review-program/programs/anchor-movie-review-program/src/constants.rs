@@ -6,3 +6,6 @@ pub const MAX_DESCRIPTION_LENGTH: usize = 50;
 pub const MAX_TITLE_LENGTH: usize = 20;
 pub const MAX_RATING: u8 = 5;
 pub const MIN_RATING: u8 = 1;
+pub const MAX_COMMENT_LENGTH: usize = 50;
+pub const I64_SIZE: usize = 8;
+pub const MAX_COMMENTID_LENGTH: usize = 20;
