@@ -21,12 +21,12 @@ const balanceInSOL = balanceInLamports / web3.LAMPORTS_PER_SOL;
 console.log(`💸 Balance of sender account is `, balanceInSOL, "SOL");
 
 const receiverPublicKey = new web3.PublicKey(
-  "AyRNWtd8vEVwebC5zaTNqYMWH1b2tpfGMAXtx5hqtSf5"
+  "6ETfuSKyF3341wY3zaSh1xf7MWrJTmsnqboB2CCnC2N"
 );
 
 const transaction = new web3.Transaction();
 
-const LAMPORTS_TO_SEND = 100000;
+const LAMPORTS_TO_SEND = 5000000000;
 
 const sendSolInstruction = web3.SystemProgram.transfer({
   fromPubkey: senderKeypair.publicKey,

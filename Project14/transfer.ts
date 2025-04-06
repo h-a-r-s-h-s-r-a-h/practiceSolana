@@ -11,7 +11,7 @@ console.log(
 );
 
 const receiverPubKey = new web3.PublicKey(
-  "AyRNWtd8vEVwebC5zaTNqYMWH1b2tpfGMAXtx5hqtSf5"
+  "8weixq4yWSjXtwKZaAdo5Y6z9R6vqwd8LJhUJ6LCGMis"
 );
 console.log(
   `✅ Receiver Keypair loaded successfully: `,
@@ -31,7 +31,7 @@ const balanceInSOLofSender = balanceInLamportsOfSender / web3.LAMPORTS_PER_SOL;
 console.log(`💸 Balance of sender: `, balanceInSOLofSender, `SOL`);
 
 const transaction = new web3.Transaction();
-const LAMPORTS_TO_SEND = 1000000000;
+const LAMPORTS_TO_SEND = 9000000000;
 
 const sendSolInstruction = web3.SystemProgram.transfer({
   fromPubkey: senderKeypair.publicKey,
